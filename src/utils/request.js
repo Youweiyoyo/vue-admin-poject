@@ -83,13 +83,36 @@
 // )
 
 // export default service
+import { Message } from 'element-ui'
 // 1.导入axios
 import axios from 'axios'
 // 2.创建新的axios实例
-const service = axios.create({})
+const service = axios.create({
+  baseURL: process.env.VUE_APP_BASE_API,
+  timeout: 5000
+})
 // 3.创建请求拦截器
 service.interceptors.request.use()
 // 4.创建响应拦截器
-service.interceptors.response.use()
+service.interceptors.response.use(
+  response => {
+    // 1.解构数据,axios默认给数据添加了一层data
+    const { success, message, data } = response.data
+    // 2.判断是否相应成功
+    if (success) {
+      // 3.如果成功返回 data 数据对象
+      return data
+      // 4.如果失败
+    } else {
+      // 5.提示错误消息
+      Message.error(message)
+      return Promise.reject(new Error(message))
+    }
+  },
+  err => {
+    Message.error(err.message)
+    return Promise.reject(err)
+  }
+)
 // 5.导出service
 export default service
