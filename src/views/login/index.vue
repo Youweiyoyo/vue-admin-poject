@@ -57,7 +57,7 @@
         type="primary"
         style="width:100%;margin-bottom:30px;"
         @click.native.prevent="handleLogin"
-      >登录</el-button
+        >登录</el-button
       >
 
       <div class="tips">
@@ -71,7 +71,7 @@
 <script>
 // 导入手机号码验证规则
 import { validMobile } from '@/utils/validate'
-
+import { mapActions } from 'vuex'
 export default {
   name: 'Login',
   data() {
@@ -98,7 +98,12 @@ export default {
         ],
         password: [
           { required: true, trigger: 'blur', message: '密码不能为空' },
-          { min: 6, max: 16, message: '密码的长度在6-16位之间', trigger: 'blur' }
+          {
+            min: 6,
+            max: 16,
+            message: '密码的长度在6-16位之间',
+            trigger: 'blur'
+          }
         ]
       },
       loading: false,
@@ -115,6 +120,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['user/login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -126,21 +132,17 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
+      this.$refs.loginForm.validate(async isOk => {
+        if (isOk) {
+          try {
+            this.loading = true
+            await this['user/login'](this.loginForm)
+            this.$router.push('/')
+          } catch (error) {
+            console.log(error)
+          } finally {
+            this.loading = false
+          }
         }
       })
     }

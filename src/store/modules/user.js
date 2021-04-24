@@ -1,132 +1,36 @@
-// import { login, logout, getInfo } from '@/api/user'
-// import { resetRouter } from '@/router'
-
-// const getDefaultState = () => {
-//   return {
-//     token: getToken(),
-//     name: '',
-//     avatar: ''
-//   }
-// }
-
-// const state = getDefaultState()
-
-// const mutations = {
-//   RESET_STATE: (state) => {
-//     Object.assign(state, getDefaultState())
-//   },
-//   SET_TOKEN: (state, token) => {
-//     state.token = token
-//   },
-//   SET_NAME: (state, name) => {
-//     state.name = name
-//   },
-//   SET_AVATAR: (state, avatar) => {
-//     state.avatar = avatar
-//   }
-// }
-
-// const actions = {
-//   // user login
-//   login({ commit }, userInfo) {
-//     const { username, password } = userInfo
-//     return new Promise((resolve, reject) => {
-//       login({ username: username.trim(), password: password }).then(response => {
-//         const { data } = response
-//         commit('SET_TOKEN', data.token)
-//         setToken(data.token)
-//         resolve()
-//       }).catch(error => {
-//         reject(error)
-//       })
-//     })
-//   },
-
-//   // get user info
-//   getInfo({ commit, state }) {
-//     return new Promise((resolve, reject) => {
-//       getInfo(state.token).then(response => {
-//         const { data } = response
-
-//         if (!data) {
-//           return reject('Verification failed, please Login again.')
-//         }
-
-//         const { name, avatar } = data
-
-//         commit('SET_NAME', name)
-//         commit('SET_AVATAR', avatar)
-//         resolve(data)
-//       }).catch(error => {
-//         reject(error)
-//       })
-//     })
-//   },
-
-//   // user logout
-//   logout({ commit, state }) {
-//     return new Promise((resolve, reject) => {
-//       logout(state.token).then(() => {
-//         removeToken() // must remove  token  first
-//         resetRouter()
-//         commit('RESET_STATE')
-//         resolve()
-//       }).catch(error => {
-//         reject(error)
-//       })
-//     })
-//   },
-
-//   // remove token
-//   resetToken({ commit }) {
-//     return new Promise(resolve => {
-//       removeToken() // must remove  token  first
-//       commit('RESET_STATE')
-//       resolve()
-//     })
-//   }
-// }
-
-// export default {
-//   namespaced: true,
-//   state,
-//   mutations,
-//   actions
-// }
+// 导入存储本地的方法
 import { getToken, setToken, removeToken } from '@/utils/auth'
+// 导入 user 的登录请求方法
 import { login } from '@/api/user'
 const state = {
-  token: getToken() // 初始化时从本地中缓存中读取值，放入Vuex中
+  // 1.初始化的时候，从本地存储去拿去token
+  token: getToken()
 }
 const mutations = {
-  /**
-   * 修改token
-   */
+  // 2.定义修改 token 的方法
   setToken(state, token) {
-    state.token = token // 修改 VueX 中的 token
-    setToken(token) // 调用方法直接修改保存在本地的token数据
+    // 将token赋值给vuex中的token，只是修改vuex中的token
+    state.token = token
+    // 将拿到的 token 存储到本地
+    setToken(token)
   },
-  /**
-   * 删除token
-   */
+  // 3.定义删除 token 的方法
   removeToken(state) {
-    // 1.将vuex中的token清空
     state.token = null
-    // 2.调用清空本地缓存的方法
     removeToken()
   }
 }
+// 逻辑：在登录的时候通过dispath来触发action中的login方法，在login方法中通过context.commit触发mutation 中的 setToken 方法将获取到的token存储到vuex中，当vuex中的token发生变化时，同步更新token存入缓存中，完成逻辑
 const actions = {
-  /**
-   * 登录请求
-   */
+  // 定义登录的方法
   async login(context, data) {
-    // 调用登录请求api
+    // 调用请求登录的 API
     const result = await login(data)
     context.commit('setToken', result)
   }
 }
 export default {
+  // 开启命名空间
   namespaced: true,
   state,
   mutations,
