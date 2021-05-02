@@ -1,7 +1,7 @@
 // 导入存储本地的方法
 import { getToken, setToken, removeToken } from '@/utils/auth'
 // 导入 user 的登录请求方法
-import { login, getUserInfo } from '@/api/user'
+import { login, getUserInfo, getUserDetailById } from '@/api/user'
 const state = {
   // 1.初始化的时候，从本地存储去拿去token
   token: getToken(), // token
@@ -40,7 +40,9 @@ const actions = {
   // 定义获取用户信息
   async getUserInfo(context) {
     const result = await getUserInfo()
-    context.commit('setUserInfo', result)
+    const baseInfo = await getUserDetailById(result.userId)
+    const baseResult = { ...result, ...baseInfo }
+    context.commit('setUserInfo', baseResult)
     return result // 后期权限会用到
   }
 }
