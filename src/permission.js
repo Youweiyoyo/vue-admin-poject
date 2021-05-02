@@ -23,7 +23,7 @@ router.beforeEach((to, from, next) => {
       next('/login')
     }
   }
-  NProgress.done()
+  NProgress.done() // 关闭进度条
 })
 // 路由后置守卫
 router.afterEach(() => {
