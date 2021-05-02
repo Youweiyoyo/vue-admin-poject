@@ -1,10 +1,11 @@
 // 导入存储本地的方法
 import { getToken, setToken, removeToken } from '@/utils/auth'
 // 导入 user 的登录请求方法
-import { login } from '@/api/user'
+import { login, getUserInfo } from '@/api/user'
 const state = {
   // 1.初始化的时候，从本地存储去拿去token
-  token: getToken()
+  token: getToken(), // token
+  userInfo: {} // 用户信息
 }
 const mutations = {
   // 2.定义修改 token 的方法
@@ -18,6 +19,14 @@ const mutations = {
   removeToken(state) {
     state.token = null
     removeToken()
+  },
+  // 定义存储用户信息的方法
+  setUserInfo(state, result) {
+    state.userInfo = result
+  },
+  // 删除用户信息
+  removeUserInfo(state) {
+    state.userInfo = {}
   }
 }
 // 逻辑：在登录的时候通过dispath来触发action中的login方法，在login方法中通过context.commit触发mutation 中的 setToken 方法将获取到的token存储到vuex中，当vuex中的token发生变化时，同步更新token存入缓存中，完成逻辑
@@ -27,6 +36,12 @@ const actions = {
     // 调用请求登录的 API
     const result = await login(data)
     context.commit('setToken', result)
+  },
+  // 定义获取用户信息
+  async getUserInfo(context) {
+    const result = await getUserInfo()
+    context.commit('setUserInfo', result)
+    return result // 后期权限会用到
   }
 }
 export default {
