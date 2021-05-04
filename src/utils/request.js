@@ -48,7 +48,16 @@ service.interceptors.response.use(
     }
   },
   error => {
-    Message.error(error.message) // 在页面提示错误消息
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.code === 1002
+    ) {
+      store.dispatch('user/logout')
+      router.push('/login')
+    } else {
+      Message.error(error.message) // 在页面提示错误消息
+    }
     return Promise.reject(error) // 让其进入catch，返回错误信息
   }
 )
