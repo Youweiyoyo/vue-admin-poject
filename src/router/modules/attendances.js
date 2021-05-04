@@ -11,7 +11,8 @@ export default {
       path: '',
       component: () => import('@/views/attendances'),
       meta: {
-        title: '考勤管理'
+        title: '考勤管理',
+        icon: 'skill'
       }
     }
   ]
