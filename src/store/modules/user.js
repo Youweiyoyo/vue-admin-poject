@@ -1,5 +1,5 @@
 // 导入存储本地的方法
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 // 导入 user 的登录请求方法
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
 const state = {
@@ -36,6 +36,8 @@ const actions = {
     // 调用请求登录的 API
     const result = await login(data)
     context.commit('setToken', result)
+    // 存入时间戳
+    setTimeStamp()
   },
   // 定义获取用户信息
   async getUserInfo(context) {
