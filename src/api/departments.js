@@ -8,3 +8,13 @@ export function getOrganization() {
     url: '/company/department'
   })
 }
+
+/**
+ * 删除组织架构接口
+ */
+export function delDepartments(id) {
+  return request({
+    url: `/company/department/${id}`,
+    method: 'delete'
+  })
+}

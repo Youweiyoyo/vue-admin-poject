@@ -4,7 +4,7 @@
       <el-card class="tree-card">
         <tree-tools :tree-node="company" is-root />
         <el-tree :data="departs" :props="defaultProps">
-          <tree-tools slot-scope="{ data }" :tree-node="data" />
+          <tree-tools slot-scope="{ data }" :tree-node="data" @delDepts="getOrganization" />
         </el-tree>
       </el-card>
     </div>
