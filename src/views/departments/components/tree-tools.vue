@@ -19,8 +19,14 @@
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="add">添加子部门</el-dropdown-item>
-              <el-dropdown-item v-if="!isRoot" command="edit">编辑部门</el-dropdown-item>
-              <el-dropdown-item v-if="!isRoot" command="del">删除部门</el-dropdown-item>
+              <el-dropdown-item
+                v-if="!isRoot"
+                command="edit"
+              >编辑部门</el-dropdown-item>
+              <el-dropdown-item
+                v-if="!isRoot"
+                command="del"
+              >删除部门</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
@@ -55,7 +61,7 @@ export default {
     // 新增 、 修改 、 删除、时触发
     operateDepts(type) {
       if (type === 'add') {
-        console.log('新增')
+        this.$emit('addDepts', this.treeNode)
       } else if (type === 'edit') {
         console.log('修改')
       } else {
@@ -63,12 +69,14 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          return delDepartments(this.treeNode.id)
-        }).then(() => {
-          this.$emit('delDepts')
-          this.$message.success('删除数据成功')
         })
+          .then(() => {
+            return delDepartments(this.treeNode.id)
+          })
+          .then(() => {
+            this.$emit('delDepts')
+            this.$message.success('删除数据成功')
+          })
       }
     }
   }

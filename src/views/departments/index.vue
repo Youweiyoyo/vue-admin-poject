@@ -4,20 +4,28 @@
       <el-card class="tree-card">
         <tree-tools :tree-node="company" is-root />
         <el-tree :data="departs" :props="defaultProps">
-          <tree-tools slot-scope="{ data }" :tree-node="data" @delDepts="getOrganization" />
+          <tree-tools
+            slot-scope="{ data }"
+            :tree-node="data"
+            @delDepts="getOrganization"
+            @addDepts="addDept"
+          />
         </el-tree>
+        <add-dept :show-dialog="showDialog" />
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import { getOrganization } from '@/api/departments'
 import TreeTools from './components/tree-tools.vue'
+import AddDept from './components/addDept.vue'
+import { getOrganization } from '@/api/departments'
 import { tranListToTreeData } from '@/utils/index'
 export default {
   components: {
-    TreeTools
+    TreeTools,
+    AddDept
   },
   data() {
     return {
@@ -26,7 +34,9 @@ export default {
       defaultProps: {
         label: 'name',
         children: 'children'
-      }
+      },
+      showDialog: false,
+      node: {}
     }
   },
   created() {
@@ -37,6 +47,10 @@ export default {
       const result = await getOrganization()
       this.company = { name: 'JavsScript高级程序设计', manager: '负责人' }
       this.departs = tranListToTreeData(result.depts, '')
+    },
+    addDept(node) {
+      this.showDialog = true
+      this.node = node
     }
   }
 }

@@ -18,3 +18,14 @@ export function delDepartments(id) {
     method: 'delete'
   })
 }
+
+/**
+ * 新增部门的接口
+ */
+export function addDepartments(data) {
+  return request({
+    method: 'post',
+    data, // axios 的 body 参数
+    url: '/company/department'
+  })
+}
