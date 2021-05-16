@@ -12,23 +12,31 @@
 </template>
 
 <script>
+import { getOrganization } from '@/api/departments'
 import TreeTools from './components/tree-tools.vue'
+import { tranListToTreeData } from '@/utils/index'
 export default {
   components: {
     TreeTools
   },
   data() {
     return {
-      company: { name: 'JavaScript高级程序设计', manager: '负责人' },
-      departs: [
-        { name: '总裁办', manager: '关羽', children: [{ name: '董事会' }] },
-        { name: '行政部' },
-        { name: '人事部' }
-      ],
+      company: {},
+      departs: [],
       defaultProps: {
         label: 'name',
         children: 'children'
       }
+    }
+  },
+  created() {
+    this.getOrganization()
+  },
+  methods: {
+    async getOrganization() {
+      const result = await getOrganization()
+      this.company = { name: 'JavsScript高级程序设计', manager: '负责人' }
+      this.departs = tranListToTreeData(result.depts, '')
     }
   }
 }
