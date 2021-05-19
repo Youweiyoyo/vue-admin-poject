@@ -1,7 +1,7 @@
 <template>
-  <el-dialog title="新增部门" :visible.sync="showDialog">
+  <el-dialog title="新增部门" :visible.sync="showDialog" @close="btnCancel()">
     <el-form
-      ref="formData"
+      ref="dptForm"
       :rules="formDataRule"
       label-width="120px"
       :model="formData"
@@ -25,8 +25,14 @@
           v-model="formData.manager"
           style="width:80%"
           placeholder="请选择"
+          @focus="getEmployeeSimple"
         >
-          <el-option />
+          <el-option
+            v-for="item in peoples"
+            :key="item.id"
+            :label="item.username"
+            :value="item.username"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="部门介绍" prop="introduce">
@@ -41,15 +47,16 @@
     </el-form>
     <el-row slot="footer" type="flex" justify="center">
       <el-col :span="6">
-        <el-button type="primary" plain size="small">取消</el-button>
-        <el-button type="primary" size="small">确认</el-button>
+        <el-button type="primary" plain size="small" @click="btnCancel">取消</el-button>
+        <el-button type="primary" size="small" @click="btnOk">确认</el-button>
       </el-col>
     </el-row>
   </el-dialog>
 </template>
 
 <script>
-import { getOrganization } from '@/api/departments'
+import { getOrganization, addDepartments } from '@/api/departments'
+import { getEmployeeSimple } from '@/api/employees'
 export default {
   name: 'AddDept',
   components: {},
@@ -122,14 +129,33 @@ export default {
             message: '部门介绍要求1-50个字符'
           }
         ]
-      }
+      },
+      peoples: []
     }
   },
   computed: {},
   watch: {},
   created() {},
   mounted() {},
-  methods: {}
+  methods: {
+    // 获取员工简单列表数据
+    async getEmployeeSimple() {
+      this.peoples = await getEmployeeSimple()
+    },
+    btnOk() {
+      this.$refs.dptForm.validate(async isOk => {
+        if (isOk) {
+          await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          this.$emit('addDepts')
+          this.$emit('update:showDialog', false)
+        }
+      })
+    },
+    btnCancel() {
+      this.$emit('update:showDialog', false)
+      this.$refs.dptForm.resetFields()
+    }
+  }
 }
 </script>
 

@@ -11,7 +11,11 @@
             @addDepts="addDept"
           />
         </el-tree>
-        <add-dept :show-dialog="showDialog" :tree-node="node" />
+        <add-dept
+          :show-dialog.sync="showDialog"
+          :tree-node="node"
+          @addDepts="getOrganization"
+        />
       </el-card>
     </div>
   </div>
