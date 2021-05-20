@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="新增部门" :visible.sync="showDialog" @close="btnCancel()">
+  <el-dialog :title="showTitle" :visible="showDialog" @close="btnCancel">
     <el-form
       ref="dptForm"
       :rules="formDataRule"
@@ -55,7 +55,11 @@
 </template>
 
 <script>
-import { getOrganization, addDepartments } from '@/api/departments'
+import {
+  getOrganization,
+  addDepartments,
+  getDepartDetail
+} from '@/api/departments'
 import { getEmployeeSimple } from '@/api/employees'
 export default {
   name: 'AddDept',
@@ -133,7 +137,11 @@ export default {
       peoples: []
     }
   },
-  computed: {},
+  computed: {
+    showTitle() {
+      return this.formData.id ? '编辑部门' : '新增部门'
+    }
+  },
   watch: {},
   created() {},
   mounted() {},
@@ -152,8 +160,17 @@ export default {
       })
     },
     btnCancel() {
+      this.formData = {
+        name: '',
+        code: '',
+        manager: '',
+        introduce: ''
+      }
       this.$emit('update:showDialog', false)
       this.$refs.dptForm.resetFields()
+    },
+    async getDepartDetail(id) {
+      this.formData = await getDepartDetail(id)
     }
   }
 }

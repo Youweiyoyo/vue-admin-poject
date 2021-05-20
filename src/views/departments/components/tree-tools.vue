@@ -63,7 +63,7 @@ export default {
       if (type === 'add') {
         this.$emit('addDepts', this.treeNode)
       } else if (type === 'edit') {
-        console.log('修改')
+        this.$emit('editDept', this.treeNode)
       } else {
         this.$confirm('您确认要删除此组织架构嘛？', '提示', {
           confirmButtonText: '确定',

@@ -9,9 +9,11 @@
             :tree-node="data"
             @delDepts="getOrganization"
             @addDepts="addDept"
+            @editDept="editDept"
           />
         </el-tree>
         <add-dept
+          ref="addDept"
           :show-dialog.sync="showDialog"
           :tree-node="node"
           @addDepts="getOrganization"
@@ -59,6 +61,11 @@ export default {
     addDept(node) {
       this.showDialog = true
       this.node = node
+    },
+    editDept(node) {
+      this.showDialog = true
+      this.node = node
+      this.$refs.addDept.getDepartDetail(node.id)
     }
   }
 }
