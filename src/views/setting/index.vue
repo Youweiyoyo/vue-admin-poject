@@ -5,7 +5,12 @@
         <el-tabs v-model="activeName">
           <el-tab-pane label="角色管理">
             <el-row style="height:60px">
-              <el-button type="primary" size="small" icon="el-icon-plus">
+              <el-button
+                type="primary"
+                size="small"
+                icon="el-icon-plus"
+                @click="dialogVisible = true"
+              >
                 新增角色
               </el-button>
             </el-row>
@@ -16,7 +21,9 @@
               <vxe-table-column field="age" title="操作">
                 <template v-slot="{ row }">
                   <el-button type="success">分配权限</el-button>
-                  <el-button type="primary">编辑权限</el-button>
+                  <el-button type="primary" @click="getRoleDetail(row.id)"
+                    >编辑权限</el-button
+                  >
                   <el-button type="danger" @click="deleteRole(row.id)"
                     >删除</el-button
                   >
@@ -99,11 +106,42 @@
         </el-tabs>
       </el-card>
     </div>
+    <el-dialog
+      :title="title"
+      width="30%"
+      :visible="dialogVisible"
+      @close="cancel"
+    >
+      <el-form
+        ref="roleForm"
+        label-width="120px"
+        :model="RoleData"
+        :rules="RoleDataRules"
+      >
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="RoleData.name" style="width:300px" />
+        </el-form-item>
+        <el-form-item label="角色描述">
+          <el-input v-model="RoleData.description" style="width:300px" />
+        </el-form-item>
+      </el-form>
+      <el-row type="flex" justify="center">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitRoleForm">确 定</el-button>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRoleList, getCompanyInfo, deleteRole } from '@/api/setting'
+import {
+  getRoleList,
+  getCompanyInfo,
+  deleteRole,
+  getRoleDetail,
+  updateRole,
+  addRole
+} from '@/api/setting'
 import { mapGetters } from 'vuex'
 export default {
   data() {
@@ -115,11 +153,22 @@ export default {
         page: 1,
         pagesize: 10,
         total: 0
+      },
+      dialogVisible: false,
+      RoleData: {
+        name: '',
+        description: ''
+      },
+      RoleDataRules: {
+        name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
       }
     }
   },
   computed: {
-    ...mapGetters(['companyId'])
+    ...mapGetters(['companyId']),
+    title() {
+      return this.RoleData.id ? '编辑' : '新增'
+    }
   },
   created() {
     this.getListData()
@@ -154,6 +203,36 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    // 获取角色信息
+    async getRoleDetail(id) {
+      this.RoleData = await getRoleDetail(id)
+      this.dialogVisible = true
+      console.log(this.RoleData, '<==')
+    },
+    // 更新信息提交
+    async submitRoleForm() {
+      try {
+        await this.$refs.roleForm.validate()
+        if (this.RoleData.id) {
+          await updateRole(this.RoleData)
+        } else {
+          await addRole(this.RoleData)
+        }
+        this.getListData()
+        this.$message.success('更新成功')
+        this.dialogVisible = false
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    cancel() {
+      this.RoleData = {
+        name: '',
+        description: ''
+      }
+      this.$refs.roleForm.resetFields()
+      this.dialogVisible = false
     }
   }
 }
