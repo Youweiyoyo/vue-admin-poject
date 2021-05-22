@@ -47,9 +47,7 @@
     </el-form>
     <el-row slot="footer" type="flex" justify="center">
       <el-col :span="6">
-        <el-button type="primary" plain size="small" @click="btnCancel"
-          >取消</el-button
-        >
+        <el-button type="primary" plain size="small" @click="btnCancel">取消</el-button>
         <el-button type="primary" size="small" @click="btnOk">确认</el-button>
       </el-col>
     </el-row>
@@ -78,7 +76,7 @@ export default {
     }
   },
   data() {
-    const checkNameRepeat = async (rule, value, callback) => {
+    const checkNameRepeat = async(rule, value, callback) => {
       // 先要获取最新的组织架构数据
       const { depts } = await getOrganization()
       console.log(depts, '222')
@@ -107,7 +105,7 @@ export default {
         : callback()
     }
     // 检查编码重复
-    const checkCodeRepeat = async (rule, value, callback) => {
+    const checkCodeRepeat = async(rule, value, callback) => {
       // 先要获取最新的组织架构数据
       //  检查重复规则 需要支持两种 新增模式 / 编辑模式
       const { depts } = await getOrganization()

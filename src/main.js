@@ -1,5 +1,9 @@
 import Vue from 'vue'
 
+import 'xe-utils'
+import VXETable from 'vxe-table'
+import 'vxe-table/lib/style.css'
+
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
@@ -26,6 +30,7 @@ Object.keys(directives).forEach(key => {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
+Vue.use(VXETable)
 
 Vue.config.productionTip = false
 
