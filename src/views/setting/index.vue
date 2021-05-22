@@ -68,11 +68,21 @@
 </template>
 
 <script>
+import { getRoleList } from '@/api/setting'
 export default {
   data() {
     return {
       activeName: '',
       tableData: []
+    }
+  },
+  created() {
+    this.getListData()
+  },
+  methods: {
+    async getListData() {
+      const { rows, total } = await getRoleList(this.page)
+      console.log(rows)
     }
   }
 }
