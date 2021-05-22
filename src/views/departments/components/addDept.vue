@@ -47,7 +47,9 @@
     </el-form>
     <el-row slot="footer" type="flex" justify="center">
       <el-col :span="6">
-        <el-button type="primary" plain size="small" @click="btnCancel">取消</el-button>
+        <el-button type="primary" plain size="small" @click="btnCancel"
+          >取消</el-button
+        >
         <el-button type="primary" size="small" @click="btnOk">确认</el-button>
       </el-col>
     </el-row>
@@ -58,7 +60,8 @@
 import {
   getOrganization,
   addDepartments,
-  getDepartDetail
+  getDepartDetail,
+  updateDepartments
 } from '@/api/departments'
 import { getEmployeeSimple } from '@/api/employees'
 export default {
@@ -75,23 +78,53 @@ export default {
     }
   },
   data() {
-    // 寻找同级部门下，是否存有重复的部门
-    const checkNameRepeat = async(rule, value, callBack) => {
+    const checkNameRepeat = async (rule, value, callback) => {
+      // 先要获取最新的组织架构数据
       const { depts } = await getOrganization()
-      // 寻找某一部门下的子部门
-      const isRepeat = depts
-        .fiter(item => item.pid === this.treeNode.id)
-        .some(item => item.name === value)
+      console.log(depts, '222')
+      //  检查重复规则 需要支持两种 新增模式 / 编辑模式
+      // depts是所有的部门数据
+      // 如何去找技术部所有的子节点
+      let isRepeat = false
+      if (this.formData.id) {
+        // 有id就是编辑模式
+        // 编辑 张三 => 校验规则 除了我之外 同级部门下 不能有叫张三的
+        isRepeat = depts
+          .filter(
+            item =>
+              item.id !== this.formData.id && item.pid === this.treeNode.pid
+          )
+          .some(item => item.name === value)
+      } else {
+        // 没id就是新增模式
+        isRepeat = depts
+          .filter(item => item.pid === this.treeNode.id)
+          .some(item => item.name === value)
+      }
+
       isRepeat
-        ? callBack(new Error(`同级部门下${value}编码已经存在`))
-        : callBack()
+        ? callback(new Error(`同级部门下已经有${value}的部门了`))
+        : callback()
     }
-    const checkCodeRepeat = async(rule, value, callBack) => {
+    // 检查编码重复
+    const checkCodeRepeat = async (rule, value, callback) => {
+      // 先要获取最新的组织架构数据
+      //  检查重复规则 需要支持两种 新增模式 / 编辑模式
       const { depts } = await getOrganization()
-      const isRepeat = depts.some(item => item.pid === value && value)
+      let isRepeat = false
+      if (this.formData.id) {
+        // 编辑模式  因为编辑模式下 不能算自己
+        isRepeat = depts.some(
+          item => item.id !== this.formData.id && item.code === value && value
+        )
+      } else {
+        // 新增模式
+        isRepeat = depts.some(item => item.code === value && value) // 这里加一个 value不为空 因为我们的部门有可能没有code
+      }
+
       isRepeat
-        ? callBack(new Error(`同级部门下${value}ID已经存在`))
-        : callBack()
+        ? callback(new Error(`组织架构中已经有部门使用${value}编码`))
+        : callback()
     }
     return {
       formData: {
@@ -109,7 +142,7 @@ export default {
             message: '部门名称要求1-50个字符',
             trigger: 'blur'
           },
-          { trigger: 'blur', validate: checkNameRepeat }
+          { trigger: 'blur', validator: checkNameRepeat }
         ],
         code: [
           { required: true, message: '部门编码不能为空', trigger: 'blur' },
@@ -119,7 +152,7 @@ export default {
             message: '部门编码要求1-50个字符',
             trigger: 'blur'
           },
-          { trigger: 'blur', validate: checkCodeRepeat }
+          { trigger: 'blur', validator: checkCodeRepeat }
         ],
         manager: [
           { required: true, message: '部门管理者不能为空', trigger: 'blur' }
@@ -143,7 +176,9 @@ export default {
     }
   },
   watch: {},
-  created() {},
+  created() {
+    this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
+  },
   mounted() {},
   methods: {
     // 获取员工简单列表数据
@@ -153,19 +188,18 @@ export default {
     btnOk() {
       this.$refs.dptForm.validate(async isOk => {
         if (isOk) {
-          await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          if (this.formData.id) {
+            await updateDepartments(this.formData)
+          } else {
+            await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          }
           this.$emit('addDepts')
           this.$emit('update:showDialog', false)
         }
       })
     },
     btnCancel() {
-      this.formData = {
-        name: '',
-        code: '',
-        manager: '',
-        introduce: ''
-      }
+      this.formData = JSON.parse(JSON.stringify(this.defaultFormData))
       this.$emit('update:showDialog', false)
       this.$refs.dptForm.resetFields()
     },
