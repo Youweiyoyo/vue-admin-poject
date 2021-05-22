@@ -73,7 +73,12 @@ export default {
   data() {
     return {
       activeName: '',
-      tableData: []
+      tableData: [],
+      page: {
+        page: 1,
+        pagesize: 10,
+        total: 0
+      }
     }
   },
   created() {
@@ -81,8 +86,8 @@ export default {
   },
   methods: {
     async getListData() {
-      const { rows, total } = await getRoleList(this.page)
-      console.log(rows)
+      const res = await getRoleList(this.page)
+      console.log(res)
     }
   }
 }
