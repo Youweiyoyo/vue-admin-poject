@@ -173,6 +173,7 @@ export default {
   created() {
     this.getListData()
     this.getCompanyInfo()
+    this.dafaultRoleForm = JSON.parse(JSON.stringify(this.RoleData))
   },
   methods: {
     async getListData() {
@@ -227,10 +228,11 @@ export default {
       }
     },
     cancel() {
-      this.RoleData = {
-        name: '',
-        description: ''
-      }
+      // this.RoleData = {
+      //   name: '',
+      //   description: ''
+      // }
+      this.RoleData = JSON.parse(JSON.stringify(this.dafaultRoleForm))
       this.$refs.roleForm.resetFields()
       this.dialogVisible = false
     }
