@@ -20,12 +20,13 @@
             field="formOfEmployment"
             title="聘用形式"
             sortable
+            :formatter="formatter"
           />
           <vxe-table-column field="departmentName" title="部门" sortable />
           <vxe-table-column field="timeOfEntry" title="入职时间" sortable />
           <vxe-table-column field="enableState" title="账户状态" sortable />
           <vxe-table-column title="操作" fixed="right" width="280">
-            <template v-slot="{ row }">
+            <template>
               <el-button type="text" size="small">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
@@ -58,6 +59,7 @@
 
 <script>
 import { getEmployeeList } from '@/api/employees'
+import EmployeeEnum from '@/api/constant/employees'
 export default {
   data() {
     return {
@@ -86,6 +88,13 @@ export default {
       this.page.page = currentPage
       this.page.pagesize = pageSize
       this.getEmployeeList()
+    },
+    // 格式化聘用形式
+    formatter({ cellValue, row, column }) {
+      const obj = EmployeeEnum.hireType.find(item => {
+        return cellValue === item.id
+      })
+      return obj.id ? obj.value : '未知的形式'
     }
   }
 }
