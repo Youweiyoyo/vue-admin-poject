@@ -12,14 +12,19 @@
         </template>
       </page-tools>
       <el-card>
-        <vxe-table align="center" :data="tableData">
+        <vxe-table v-loading="loading" align="center" :data="tabList">
           <vxe-table-column type="seq" width="60" title="序号" />
-          <vxe-table-column field="name" title="姓名" sortable />
-          <vxe-table-column field="sex" title="工号" sortable />
-          <vxe-table-column field="age" title="聘用形式" sortable />
-          <vxe-table-column field="age" title="入职时间" sortable />
-          <vxe-table-column field="age" title="账户状态" sortable />
-          <vxe-table-column field="age" title="操作">
+          <vxe-table-column field="username" title="姓名" sortable />
+          <vxe-table-column field="workNumber" title="工号" sortable />
+          <vxe-table-column
+            field="formOfEmployment"
+            title="聘用形式"
+            sortable
+          />
+          <vxe-table-column field="departmentName" title="部门" sortable />
+          <vxe-table-column field="timeOfEntry" title="入职时间" sortable />
+          <vxe-table-column field="enableState" title="账户状态" sortable />
+          <vxe-table-column title="操作" fixed="right" width="280">
             <template v-slot="{ row }">
               <el-button type="text" size="small">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
@@ -41,9 +46,9 @@
             'FullJump',
             'Total'
           ]"
-          :current-page="1"
-          :page-size="10"
-          :total="20"
+          :current-page="page.page"
+          :page-size="page.pagesize"
+          :total="page.total"
           @page-change="handlePageChange"
         />
       </el-card>
@@ -52,7 +57,38 @@
 </template>
 
 <script>
-export default {}
+import { getEmployeeList } from '@/api/employees'
+export default {
+  data() {
+    return {
+      tabList: [],
+      page: {
+        page: 1,
+        size: 10,
+        total: 0
+      },
+      loading: false
+    }
+  },
+  created() {
+    this.getEmployeeList()
+  },
+  methods: {
+    async getEmployeeList() {
+      this.loading = true
+      const { rows, total } = await getEmployeeList(this.page)
+      this.page.total = total
+      this.tabList = rows
+      this.loading = false
+    },
+    // 分页
+    handlePageChange({ currentPage, pageSize }) {
+      this.page.page = currentPage
+      this.page.pagesize = pageSize
+      this.getEmployeeList()
+    }
+  }
+}
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>
