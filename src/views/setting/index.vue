@@ -21,12 +21,8 @@
               <vxe-table-column field="age" title="操作">
                 <template v-slot="{ row }">
                   <el-button type="success">分配权限</el-button>
-                  <el-button type="primary" @click="getRoleDetail(row.id)"
-                    >编辑权限</el-button
-                  >
-                  <el-button type="danger" @click="deleteRole(row.id)"
-                    >删除</el-button
-                  >
+                  <el-button type="primary" @click="getRoleDetail(row.id)">编辑权限</el-button>
+                  <el-button type="danger" @click="deleteRole(row.id)">删除</el-button>
                 </template>
               </vxe-table-column>
             </vxe-table>
@@ -194,7 +190,8 @@ export default {
     // 删除
     async deleteRole(id) {
       try {
-        await this.$confirm('确认删除该角色吗？', {
+        await ('确认删除该角色吗？',
+        {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         })

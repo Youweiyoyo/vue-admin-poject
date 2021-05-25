@@ -23,8 +23,16 @@
             :formatter="formatter"
           />
           <vxe-table-column field="departmentName" title="部门" sortable />
-          <vxe-table-column field="timeOfEntry" title="入职时间" sortable />
-          <vxe-table-column field="enableState" title="账户状态" sortable />
+          <vxe-table-column field="timeOfEntry" title="入职时间" sortable>
+            <template v-slot="{ row }">
+              {{ row.timeOfEntry | formatDate }}
+            </template>
+          </vxe-table-column>
+          <vxe-table-column field="enableState" title="账户状态" sortable>
+            <template v-slot="{ row }">
+              <el-switch :value="row.enableState === 1" />
+            </template>
+          </vxe-table-column>
           <vxe-table-column title="操作" fixed="right" width="280">
             <template>
               <el-button type="text" size="small">查看</el-button>
@@ -94,6 +102,7 @@ export default {
       const obj = EmployeeEnum.hireType.find(item => {
         return cellValue === item.id
       })
+      console.log(obj, '<==')
       return obj.id ? obj.value : '未知的形式'
     }
   }
