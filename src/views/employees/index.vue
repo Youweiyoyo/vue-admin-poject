@@ -3,12 +3,17 @@
     <div class="app-container">
       <page-tools>
         <template #before>
-          <span>总条数16</span>
+          <span>总条数{{ page.total }}</span>
         </template>
         <template #after>
           <el-button type="warning">excel导入</el-button>
           <el-button type="danger">excel导出</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="showDialog = true"
+            >新增</el-button
+          >
         </template>
       </page-tools>
       <el-card>
@@ -67,13 +72,18 @@
         />
       </el-card>
     </div>
+    <add-employees :show-dialog.sync="showDialog" @getList="getEmployeeList" />
   </div>
 </template>
 
 <script>
 import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
+import addEmployees from './components/add-employess'
 export default {
+  components: {
+    addEmployees
+  },
   data() {
     return {
       tabList: [],
@@ -82,13 +92,15 @@ export default {
         size: 10,
         total: 0
       },
-      loading: false
+      loading: false,
+      showDialog: false
     }
   },
   created() {
     this.getEmployeeList()
   },
   methods: {
+    // 获取数据
     async getEmployeeList() {
       this.loading = true
       const { rows, total } = await getEmployeeList(this.page)
