@@ -34,13 +34,18 @@
             </template>
           </vxe-table-column>
           <vxe-table-column title="操作" fixed="right" width="280">
-            <template>
+            <template v-slot="{ row }">
               <el-button type="text" size="small">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small">角色</el-button>
-              <el-button type="text" size="small">删除</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="deleteEmployee(row.id)"
+                >删除</el-button
+              >
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -66,7 +71,7 @@
 </template>
 
 <script>
-import { getEmployeeList } from '@/api/employees'
+import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 export default {
   data() {
@@ -102,8 +107,26 @@ export default {
       const obj = EmployeeEnum.hireType.find(item => {
         return cellValue === item.id
       })
-      console.log(obj, '<==')
-      return obj.id ? obj.value : '未知的形式'
+      if (obj) {
+        return obj.value
+      } else {
+        return '未知的形式'
+      }
+      // return obj.id ? obj.value : '未知的形式'
+    },
+    // 删除员工
+    async deleteEmployee(id) {
+      try {
+        await this.$confirm('确认删除该员工？', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消'
+        })
+        await delEmployee(id)
+        this.getEmployeeList()
+        this.$message.success('删除成功!')
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
