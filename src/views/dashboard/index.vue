@@ -1,14 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
-    <page-tools>
-      <template #before>
-        <span>全局组件</span>
-      </template>
-      <template #after>
-        <el-button type="info" size="small">点击按钮</el-button>
-      </template>
-    </page-tools>
+    <upload-excel />
   </div>
 </template>
 
