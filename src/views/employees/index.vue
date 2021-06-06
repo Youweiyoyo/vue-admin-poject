@@ -6,16 +6,16 @@
           <span>总条数{{ page.total }}</span>
         </template>
         <template #after>
-          <el-button
-            type="warning"
-            @click="$router.push('/import')"
-          >excel导入</el-button>
+          <el-button type="warning" @click="$router.push('/import')"
+            >excel导入</el-button
+          >
           <el-button type="danger" @click="exportData">excel导出</el-button>
           <el-button
             type="primary"
             icon="el-icon-plus"
             @click="showDialog = true"
-          >新增</el-button>
+            >新增</el-button
+          >
         </template>
       </page-tools>
       <el-card>
@@ -51,7 +51,8 @@
                 type="text"
                 size="small"
                 @click="deleteEmployee(row.id)"
-              >删除</el-button>
+                >删除</el-button
+              >
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -81,6 +82,7 @@
 import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 import addEmployees from './components/add-employess'
+import { formatDate } from '@/filters/index'
 export default {
   components: {
     addEmployees
@@ -161,12 +163,28 @@ export default {
         const data = this.formatJson(headers, rows)
         excel.export_json_to_excel({
           header: Object.keys(headers),
-          data
+          data,
+          filename: '员工信息表'
         })
       })
     },
     formatJson(headers, rows) {
-      return rows.map(item => Object.keys(headers).map(keys => item[headers[keys]]))
+      return rows.map(item => {
+        return Object.keys(headers).map(keys => {
+          if (
+            headers[keys] === 'timeOfEntry' ||
+            headers[keys] === 'correctionTime'
+          ) {
+            return formatDate(item[headers[keys]])
+          } else if (headers[keys] === 'formOfEmployment') {
+            const obj = EmployeeEnum.hireType.find(
+              obj => obj.id === item[headers[keys]]
+            )
+            return obj ? obj.value : '未知'
+          }
+          return item[headers[keys]]
+        })
+      })
     }
   }
 }
