@@ -6,8 +6,11 @@
           <span>总条数{{ page.total }}</span>
         </template>
         <template #after>
-          <el-button type="warning" @click="$router.push('/import')">excel导入</el-button>
-          <el-button type="danger">excel导出</el-button>
+          <el-button
+            type="warning"
+            @click="$router.push('/import')"
+          >excel导入</el-button>
+          <el-button type="danger" @click="exportData">excel导出</el-button>
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -137,6 +140,33 @@ export default {
       } catch (error) {
         console.error(error)
       }
+    },
+    // excle导出
+    exportData() {
+      const headers = {
+        手机号: 'mobile',
+        姓名: 'username',
+        入职日期: 'timeOfEntry',
+        聘用形式: 'formOfEmployment',
+        转正日期: 'correctionTime',
+        工号: 'workNumber',
+        部门: 'departmentName'
+      }
+      // 懒加载的形式调用方法
+      import('@/vendor/Export2Excel').then(async excel => {
+        const { rows } = await getEmployeeList({
+          page: 1,
+          size: this.page.total
+        })
+        const data = this.formatJson(headers, rows)
+        excel.export_json_to_excel({
+          header: Object.keys(headers),
+          data
+        })
+      })
+    },
+    formatJson(headers, rows) {
+      return rows.map(item => Object.keys(headers).map(keys => item[headers[keys]]))
     }
   }
 }
