@@ -6,14 +6,13 @@
           <span>总条数{{ page.total }}</span>
         </template>
         <template #after>
-          <el-button type="warning">excel导入</el-button>
+          <el-button type="warning" @click="$router.push('/import')">excel导入</el-button>
           <el-button type="danger">excel导出</el-button>
           <el-button
             type="primary"
             icon="el-icon-plus"
             @click="showDialog = true"
-            >新增</el-button
-          >
+          >新增</el-button>
         </template>
       </page-tools>
       <el-card>
@@ -49,8 +48,7 @@
                 type="text"
                 size="small"
                 @click="deleteEmployee(row.id)"
-                >删除</el-button
-              >
+              >删除</el-button>
             </template>
           </vxe-table-column>
         </vxe-table>

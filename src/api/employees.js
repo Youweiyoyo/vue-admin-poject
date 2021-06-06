@@ -35,3 +35,14 @@ export function addEmployee(data) {
     data
   })
 }
+/**
+ * 导入excel
+ * 注意：这个请求需要一个数组
+ */
+export function importEmployee(data) {
+  return request({
+    url: '/sys/user/batch',
+    method: 'post',
+    data
+  })
+}
