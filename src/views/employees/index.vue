@@ -6,16 +6,9 @@
           <span>总条数{{ page.total }}</span>
         </template>
         <template #after>
-          <el-button type="warning" @click="$router.push('/import')"
-            >excel导入</el-button
-          >
+          <el-button type="warning" @click="$router.push('/import')">excel导入</el-button>
           <el-button type="danger" @click="exportData">excel导出</el-button>
-          <el-button
-            type="primary"
-            icon="el-icon-plus"
-            @click="showDialog = true"
-            >新增</el-button
-          >
+          <el-button type="primary" icon="el-icon-plus" @click="showDialog = true">新增</el-button>
         </template>
       </page-tools>
       <el-card>
@@ -42,17 +35,12 @@
           </vxe-table-column>
           <vxe-table-column title="操作" fixed="right" width="280">
             <template v-slot="{ row }">
-              <el-button type="text" size="small">查看</el-button>
+              <el-button type="text" size="small" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small">角色</el-button>
-              <el-button
-                type="text"
-                size="small"
-                @click="deleteEmployee(row.id)"
-                >删除</el-button
-              >
+              <el-button type="text" size="small" @click="deleteEmployee(row.id)">删除</el-button>
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -161,10 +149,14 @@ export default {
           size: this.page.total
         })
         const data = this.formatJson(headers, rows)
+        const multiHeader = [['姓名', '主要信息', '', '', '', '', '部门']]
+        const merges = ['A1:A2', 'B1:F1', 'G1:G2']
         excel.export_json_to_excel({
           header: Object.keys(headers),
           data,
-          filename: '员工信息表'
+          filename: '员工信息表',
+          multiHeader, // 复杂表头
+          merges // 合并表头
         })
       })
     },

@@ -14,6 +14,14 @@ export default {
         title: '员工管理',
         icon: 'people'
       }
+    },
+    {
+      path: 'detail/:id', // 路由传参后面添加 ?表示该参数可传可不传
+      component: () => import('@/views/employees/detail'),
+      hidden: true, // hidden = true 表示不显示该组件
+      meta: {
+        title: '员工详情'
+      }
     }
   ]
 }
