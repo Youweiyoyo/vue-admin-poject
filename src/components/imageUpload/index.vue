@@ -14,6 +14,13 @@
     >
       <i class="el-icon-plus" />
     </el-upload>
+    <el-progress
+      v-if="isShowPercentage"
+      style="width:150px"
+      :text-inside="true"
+      :stroke-width="15"
+      :percentage="Percentage"
+    />
     <el-dialog :visible.sync="isDialog" title="预览图片">
       <img :src="imgUrl" alt="图片文件" style="width:100%">
     </el-dialog>
@@ -34,7 +41,9 @@ export default {
       fileList: [],
       imgUrl: '',
       isDialog: false,
-      currentFileUid: null // 当前上传成功文件的 uid
+      currentFileUid: null, // 当前上传成功文件的 uid
+      Percentage: 0, // 上传进度
+      isShowPercentage: false
     }
   },
   computed: {
@@ -75,6 +84,7 @@ export default {
         return false
       } else {
         this.currentFileUid = file.uid
+        this.isShowPercentage = true
         return true
       }
     },
@@ -87,7 +97,10 @@ export default {
             Region: 'ap-beijing', // 存储桶所在地域
             Key: params.file.name, // 存储文件的名称
             StorageClass: 'STANDARD',
-            Body: params.file // 上传的 File 文件对象
+            Body: params.file, // 上传的 File 文件对象
+            onProgress: progressData => {
+              this.Percentage = progressData.percent * 100
+            }
           },
           (err, data) => {
             console.log(data, 'XXX')
@@ -101,6 +114,8 @@ export default {
                   return item
                 }
               })
+              this.isShowPercentage = false
+              this.Percentage = 0
             }
           }
         )
