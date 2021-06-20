@@ -10,29 +10,31 @@
       :on-preview="preview"
       :on-change="handleChange"
       :before-upload="beforeUpload"
+      :http-request="upload"
     >
       <i class="el-icon-plus" />
     </el-upload>
     <el-dialog :visible.sync="isDialog" title="预览图片">
-      <img :src="imgUrl" alt="图片文件" />
+      <img :src="imgUrl" alt="图片文件" style="width:100%">
     </el-dialog>
   </div>
 </template>
 
 <script>
+import COS from 'cos-js-sdk-v5' // 引入腾讯云 COS 包
+const cos = new COS({
+  SecretId: 'AKIDzmKbbKmyVlk7IEuLWS8ZkfLlwrXyA5j6', // 腾讯云身份ID
+  SecretKey: 'GPM3VigPuBDzUigNnwoQlpdDWZNxJQHt' // 腾讯云身份密钥
+})
 export default {
   components: {},
   props: {},
   data() {
     return {
-      fileList: [
-        {
-          url:
-            'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdingyue.ws.126.net%2FtX0g2%3D7S%3DjaYm9qOoN75qxzva%3DRaOg3kd%3DwbQdb47WfrG1553483457714compressflag.jpg&refer=http%3A%2F%2Fdingyue.ws.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1626763018&t=32541dcbbfd741a024de0de29eea1f49'
-        }
-      ],
+      fileList: [],
       imgUrl: '',
-      isDialog: false
+      isDialog: false,
+      currentFileUid: null // 当前上传成功文件的 uid
     }
   },
   computed: {
@@ -72,7 +74,36 @@ export default {
         this.$message.error('文件大小不能超过5KB')
         return false
       } else {
+        this.currentFileUid = file.uid
         return true
+      }
+    },
+    // 自定义上传事件
+    upload(params) {
+      if (params.file) {
+        cos.putObject(
+          {
+            Bucket: 'youwei-001-1306271652', // 存储桶名称
+            Region: 'ap-beijing', // 存储桶所在地域
+            Key: params.file.name, // 存储文件的名称
+            StorageClass: 'STANDARD',
+            Body: params.file // 上传的 File 文件对象
+          },
+          (err, data) => {
+            console.log(data, 'XXX')
+            if (!err && data.statusCode === 200) {
+              // 如果 fileList中的item的uid=上传成功的文件的uid就给这个文件更换线上的地址，并返回新的 fileList
+              // upload: true 表示上传完毕,根据upload去判断是否保存
+              this.fileList = this.fileList.map(item => {
+                if (item.uid === this.currentFileUid) {
+                  return { url: 'http://' + data.Location, upload: true }
+                } else {
+                  return item
+                }
+              })
+            }
+          }
+        )
       }
     }
   }
