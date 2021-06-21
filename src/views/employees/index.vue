@@ -16,6 +16,11 @@
           <vxe-table-column type="seq" width="60" title="序号" />
           <vxe-table-column field="username" title="姓名" sortable />
           <vxe-table-column field="workNumber" title="工号" sortable />
+          <vxe-table-column field="workNumber" title="头像" width="120px">
+            <template v-slot="{row}">
+              <img v-imageerror="defaultImg" :src="row.staffPhoto">
+            </template>
+          </vxe-table-column>
           <vxe-table-column
             field="formOfEmployment"
             title="聘用形式"
@@ -84,7 +89,8 @@ export default {
         total: 0
       },
       loading: false,
-      showDialog: false
+      showDialog: false,
+      defaultImg: require('@/assets/common/head.jpg')
     }
   },
   created() {
@@ -182,4 +188,11 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+img{
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  padding: 10px;
+}
+</style>

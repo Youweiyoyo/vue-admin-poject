@@ -494,13 +494,14 @@ export default {
     async saveUser() {
       // 先获取头像中的地址
       const fileList = this.$refs.staffPhoto.fileList
+      console.log(fileList, 'AA')
       if (fileList.some(item => !item.upload)) {
         this.$message.warning('文件未上传完成')
         return
       } else {
         await saveUserDetailById({
           ...this.userInfo,
-          staffPhoto: fileList.lenght ? fileList[0].url : ' '
+          staffPhoto: fileList.length ? fileList[0].url : ' '
         })
         this.$message.success('保存用户基本信息成功')
       }
@@ -513,7 +514,7 @@ export default {
       } else {
         await updatePersonal({
           ...this.formData,
-          staffPhoto: fileList.lenght ? fileList[0].url : ' '
+          staffPhoto: fileList.length ? fileList[0].url : ' '
         })
         this.$message.success('保存用户基础信息成功')
       }

@@ -2,6 +2,7 @@
 export const imageerror = {
   // 指令对象 会在当前的dom元素插入到节点之后执行
   inserted(dom, option) {
+    dom.src = dom.src || option.value
     // 1.dom 表示当前指令作用的dom对象，dom在此时表示就是图片
     // 2.option是指令中的变量的解释，它有一个属性叫 value
     dom.onerror = function() {
