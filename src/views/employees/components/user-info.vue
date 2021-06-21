@@ -477,7 +477,7 @@ export default {
   methods: {
     async getUserDetailById() {
       this.userInfo = await getUserDetailById(this.userId)
-      if (this.userInfo.staffPhoto) {
+      if (this.userInfo.staffPhoto && this.userInfo.staffPhoto.trim()) {
         this.$refs.staffPhoto.fileList = [
           { url: this.userInfo.staffPhoto, upload: true }
         ]
@@ -485,19 +485,38 @@ export default {
     },
     async getPersonalDetail() {
       this.formData = await getPersonalDetail(this.userId)
-      if (this.formData.staffPhoto) {
+      if (this.formData.staffPhoto && this.formData.staffPhoto.trim()) {
         this.$refs.myStaffPhoto.fileList = [
           { url: this.formData.staffPhoto, upload: true }
         ]
       }
     },
     async saveUser() {
-      await saveUserDetailById(this.userInfo)
-      this.$message.success('保存用户基本信息成功')
+      // 先获取头像中的地址
+      const fileList = this.$refs.staffPhoto.fileList
+      if (fileList.some(item => !item.upload)) {
+        this.$message.warning('文件未上传完成')
+        return
+      } else {
+        await saveUserDetailById({
+          ...this.userInfo,
+          staffPhoto: fileList.lenght ? fileList[0].url : ' '
+        })
+        this.$message.success('保存用户基本信息成功')
+      }
     },
     async savePersonal() {
-      await updatePersonal(this.formData)
-      this.$message.success('保存用户基础信息成功')
+      const fileList = this.$refs.myStaffPhoto.fileList
+      if (fileList.some(item => !item.upload)) {
+        this.$message.warning('文件未上传完成')
+        return
+      } else {
+        await updatePersonal({
+          ...this.formData,
+          staffPhoto: fileList.lenght ? fileList[0].url : ' '
+        })
+        this.$message.success('保存用户基础信息成功')
+      }
     }
   }
 }
