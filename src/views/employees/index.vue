@@ -18,7 +18,7 @@
           <vxe-table-column field="workNumber" title="工号" sortable />
           <vxe-table-column field="workNumber" title="头像" width="120px">
             <template v-slot="{row}">
-              <img v-imageerror="defaultImg" :src="row.staffPhoto">
+              <img v-imageerror="defaultImg" :src="row.staffPhoto" @click="handleWork(row.staffPhoto)">
             </template>
           </vxe-table-column>
           <vxe-table-column
@@ -44,7 +44,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="editRole(row.id)">角色</el-button>
               <el-button type="text" size="small" @click="deleteEmployee(row.id)">删除</el-button>
             </template>
           </vxe-table-column>
@@ -68,17 +68,26 @@
       </el-card>
     </div>
     <add-employees :show-dialog.sync="showDialog" @getList="getEmployeeList" />
+    <el-dialog :visible.sync="isDialog" title="二维码" width="30%">
+      <el-row type="flex" justify="center">
+        <canvas ref="myCanvas" />
+      </el-row>
+    </el-dialog>
+    <assign-role ref="role" :show-role-dialog.sync="showRoleDialog" :user-id="userID" />
   </div>
 </template>
 
 <script>
+import assignRole from './components/assign-role.vue'
 import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 import addEmployees from './components/add-employess'
 import { formatDate } from '@/filters/index'
+import QrCode from 'qrcode'
 export default {
   components: {
-    addEmployees
+    addEmployees,
+    assignRole
   },
   data() {
     return {
@@ -90,6 +99,9 @@ export default {
       },
       loading: false,
       showDialog: false,
+      isDialog: false,
+      showRoleDialog: false,
+      userID: null,
       defaultImg: require('@/assets/common/head.jpg')
     }
   },
@@ -183,6 +195,23 @@ export default {
           return item[headers[keys]]
         })
       })
+    },
+    // 展示二维码
+    handleWork(url) {
+      if (url) {
+        this.isDialog = true
+        this.$nextTick(() => {
+          QrCode.toCanvas(this.$refs.myCanvas, url)
+        })
+      } else {
+        this.$message.warning('该用户未上传头像')
+      }
+    },
+    // 角色
+    async editRole(id) {
+      this.userID = id
+      await this.$refs.role.getUserDetailById(id)
+      this.showRoleDialog = true
     }
   }
 }
