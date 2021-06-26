@@ -25,6 +25,7 @@ export function addPermission(data) {
  * 更新权限
  */
 export function updatePermission(data) {
+  console.log(data)
   return request({
     url: `/sys/permission/${data.id}`,
     method: 'put',
