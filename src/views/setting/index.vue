@@ -20,9 +20,18 @@
               <vxe-table-column field="description" title="描述" />
               <vxe-table-column field="age" title="操作">
                 <template v-slot="{ row }">
-                  <el-button type="success">分配权限</el-button>
-                  <el-button type="primary" @click="getRoleDetail(row.id)">编辑权限</el-button>
-                  <el-button type="danger" @click="deleteRole(row.id)">删除</el-button>
+                  <el-button
+                    type="success"
+                    @click="allocatingRermisson(row.id)"
+                  >分配权限</el-button>
+                  <el-button
+                    type="primary"
+                    @click="getRoleDetail(row.id)"
+                  >编辑权限</el-button>
+                  <el-button
+                    type="danger"
+                    @click="deleteRole(row.id)"
+                  >删除</el-button>
                 </template>
               </vxe-table-column>
             </vxe-table>
@@ -102,6 +111,7 @@
         </el-tabs>
       </el-card>
     </div>
+    <!-- 编辑&新增 -->
     <el-dialog
       :title="title"
       width="30%"
@@ -126,6 +136,29 @@
         <el-button type="primary" @click="submitRoleForm">确 定</el-button>
       </el-row>
     </el-dialog>
+    <!-- 分配 -->
+    <el-dialog
+      :visible="allocatingPermisson"
+      title="分配权限"
+      width="30%"
+      @close="btnClena"
+    >
+      <el-tree
+        ref="treeRef"
+        :data="treeList"
+        :props="{ label: 'name' }"
+        :default-expand-all="true"
+        show-checkbox
+        :default-checked-keys="userPermissonList"
+        node-key="id"
+      />
+      <el-row type="flex" justify="center">
+        <el-col :span="16">
+          <el-button type="primary" size="small" @click="btnOK">确定</el-button>
+          <el-button type="defualt" size="small" @click="btnClena">取消</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -136,8 +169,11 @@ import {
   deleteRole,
   getRoleDetail,
   updateRole,
-  addRole
+  addRole,
+  assignPerm
 } from '@/api/setting'
+import { getPermissionList } from '@/api/permisson'
+import { tranListToTreeData } from '@/utils'
 import { mapGetters } from 'vuex'
 export default {
   data() {
@@ -157,7 +193,11 @@ export default {
       },
       RoleDataRules: {
         name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
-      }
+      },
+      allocatingPermisson: false,
+      treeList: [],
+      userPermissonList: [],
+      rouleID: null
     }
   },
   computed: {
@@ -225,13 +265,32 @@ export default {
       }
     },
     cancel() {
-      // this.RoleData = {
-      //   name: '',
-      //   description: ''
-      // }
       this.RoleData = JSON.parse(JSON.stringify(this.dafaultRoleForm))
       this.$refs.roleForm.resetFields()
       this.dialogVisible = false
+    },
+    // 分配权限
+    async allocatingRermisson(id) {
+      this.allocatingPermisson = true
+      this.rouleID = id
+      const data = await getPermissionList()
+      this.treeList = tranListToTreeData(data, '0')
+      const { permIds } = await getRoleDetail(id)
+      this.userPermissonList = permIds
+    },
+    // 确定
+    async btnOK() {
+      await assignPerm({
+        id: this.rouleID,
+        permIds: this.$refs.treeRef.getCheckedKeys()
+      })
+      this.$message.success('分配权限成功！')
+      this.allocatingPermisson = false
+    },
+    // 取消
+    btnClena() {
+      this.userPermissonList = []
+      this.allocatingPermisson = false
     }
   }
 }
