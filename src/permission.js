@@ -8,7 +8,7 @@ import 'nprogress/nprogress.css' // 引入进度条样式
 // 4 设置路由白名单
 const whiteList = ['/login', '/404']
 // 放置路由前置守卫
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   NProgress.start() // 打开进度条
   if (store.getters.token) {
     if (to.path === '/login') {
@@ -16,9 +16,19 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 判断有无用户id
       if (!store.getters.userId) {
-        await store.dispatch('user/getUserInfo')
+        const { roles } = await store.dispatch('user/getUserInfo')
+        const routes = await store.dispatch(
+          'permission/filterRouters',
+          roles.menus
+        )
+        router.addRoutes([
+          ...routes,
+          { path: '*', redirect: '/404', hidden: true }
+        ])
+        next(to.path)
+      } else {
+        next()
       }
-      next()
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {

@@ -3,12 +3,12 @@ import { constantRoutes, asyncRouters } from '@/router/index' // 引入静态路
 const state = {
   routes: constantRoutes // 当前用户所拥有的路由表
 }
-const mutation = {
+const mutations = {
   setRouters(state, NweRouters) {
-    state.routes = [...constantRoutes, NweRouters]
+    state.routes = [...constantRoutes, ...NweRouters]
   }
 }
-const action = {
+const actions = {
   // menus 为用户所有的菜单权限
   filterRouters(context, menus) {
     const routes = []
@@ -24,6 +24,6 @@ const action = {
 export default {
   namespaced: true,
   state,
-  mutation,
-  action
+  mutations,
+  actions
 }

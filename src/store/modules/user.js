@@ -2,6 +2,7 @@
 import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 // 导入 user 的登录请求方法
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
+import { resetRouter } from '@/router'
 const state = {
   // 1.初始化的时候，从本地存储去拿去token
   token: getToken(), // token
@@ -51,6 +52,8 @@ const actions = {
   logout(context) {
     context.commit('removeToken') // 删除token
     context.commit('removeUserInfo') // 删除用户信息
+    resetRouter() // 清空路由表
+    context.commit('permission/setRouters', [], { root: true })
   }
 }
 export default {

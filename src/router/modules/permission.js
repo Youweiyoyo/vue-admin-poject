@@ -3,7 +3,7 @@ import Layout from '@/layout'
 export default {
   path: '/permission',
   component: Layout, // 之所以是layout组件是因为我们的每一个页面都要用到layout
-  name: 'permission',
+  name: 'permissions',
   children: [
     {
       /**
