@@ -22,6 +22,9 @@ import '@/permission' // permission control
 // 引入 vue-print-nb 打印组件
 import Print from 'vue-print-nb'
 
+// 引入全局mixins
+import checkPermission from '@/mixins/checkPermission'
+
 // 导入创建的所有自定义指令，*代表全部，赋值给 directives
 import * as directives from '@/directives'
 // 循环遍历所有属性
@@ -43,6 +46,7 @@ Vue.use(VXETable)
 // 注册自定义组件
 Vue.use(components)
 Vue.use(Print)
+Vue.mixin(checkPermission)
 Vue.config.productionTip = false
 
 new Vue({

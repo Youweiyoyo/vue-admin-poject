@@ -151,6 +151,7 @@
         show-checkbox
         :default-checked-keys="userPermissonList"
         node-key="id"
+        :check-strictly="true"
       />
       <el-row type="flex" justify="center">
         <el-col :span="16">

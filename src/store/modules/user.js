@@ -53,6 +53,7 @@ const actions = {
     context.commit('removeToken') // 删除token
     context.commit('removeUserInfo') // 删除用户信息
     resetRouter() // 清空路由表
+    // 子模块调用子模块的action 可以 将 commit的第三个参数 设置成  { root: true } 就表示当前的context不是子模块了 而是父模块
     context.commit('permission/setRouters', [], { root: true })
   }
 }
