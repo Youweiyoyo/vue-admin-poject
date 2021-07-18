@@ -59,7 +59,7 @@
             v-model="formData.departmentName"
             style="width:50%"
             placeholder="请选择部门"
-            @focus="getDepartments"
+            @focus="getOrganization"
           />
           <el-tree
             v-if="showTree"
@@ -153,7 +153,7 @@ export default {
   },
   mounted() {},
   methods: {
-    async getDepartments() {
+    async getOrganization() {
       this.showTree = true
       this.loading = true
       const { depts } = await getOrganization()
