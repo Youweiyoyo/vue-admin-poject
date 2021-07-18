@@ -77,6 +77,7 @@ export default {
     // 获取组织架构
     async getOrganization() {
       const { depts } = await getOrganization()
+
       this.departmentList = depts
     },
     checkChange() {
