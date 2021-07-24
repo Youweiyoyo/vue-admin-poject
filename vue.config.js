@@ -99,7 +99,7 @@ module.exports = {
     ])
     // 注入 CDN 变量
     // 在执行打包的时候将 cdn 变量注入到 html 模板中
-    config.plugin('html').tag(args => {
+    config.plugin('html').tap(args => {
       // args 是 html 模板的一个变量
       args[0].cdn = CDN // 后面 cdn 就是定义的变量
       return args // 返回这个参数
