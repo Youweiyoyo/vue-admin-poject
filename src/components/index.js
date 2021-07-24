@@ -4,6 +4,8 @@
 import pageTools from './PageTools'
 import UploadExcel from './UploadExcel'
 import ImageUpload from './imageUpload'
+import FullScreen from './ScreenFull/'
+import ThemePicker from './ThemePicker'
 export default {
   // Vue 是Vue的实例对象
   install(Vue) {
@@ -11,5 +13,7 @@ export default {
     Vue.component('pageTools', pageTools)
     Vue.component('uploadExcel', UploadExcel)
     Vue.component('uploadImg', ImageUpload)
+    Vue.component('ScreenFull', FullScreen)
+    Vue.component('ThemePicker', ThemePicker)
   }
 }
