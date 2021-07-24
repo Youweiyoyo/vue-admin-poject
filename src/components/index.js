@@ -6,6 +6,7 @@ import UploadExcel from './UploadExcel'
 import ImageUpload from './imageUpload'
 import FullScreen from './ScreenFull/'
 import ThemePicker from './ThemePicker'
+import LangSelect from './lang'
 export default {
   // Vue 是Vue的实例对象
   install(Vue) {
@@ -15,5 +16,6 @@ export default {
     Vue.component('uploadImg', ImageUpload)
     Vue.component('ScreenFull', FullScreen)
     Vue.component('ThemePicker', ThemePicker)
+    Vue.component('LangSelect', LangSelect)
   }
 }

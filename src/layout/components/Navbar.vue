@@ -9,6 +9,8 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <!-- 多语言组件 -->
+      <lang-select class="right-menu-item" />
       <!-- 全屏组件 -->
       <screen-full class="right-menu-item" />
       <!-- 换肤组件 -->
